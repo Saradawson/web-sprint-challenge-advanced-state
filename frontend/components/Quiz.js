@@ -1,26 +1,43 @@
-import React from 'react'
+import React, { useEffect } from 'react';
+import { fetchQuiz, selectAnswer } from '../state/action-creators';
+import { connect } from 'react-redux';
 
-export default function Quiz(props) {
+function Quiz(props) {
+
+  useEffect(() => {
+    props.fetchQuiz();
+    
+  }, [])
+
+  const onAnswer = (evt) => {
+    console.log()
+    props.selectAnswer(evt.target.id)
+  }
+
+  console.log(props.quiz.answers && props.quiz.answers[0])
+  
+
+
   return (
     <div id="wrapper">
       {
         // quiz already in state? Let's use that, otherwise render "Loading next quiz..."
         true ? (
           <>
-            <h2>What is a closure?</h2>
+            <h2>{props.quiz.question}</h2>
 
             <div id="quizAnswers">
               <div className="answer selected">
-                A function
-                <button>
-                  SELECTED
+                {props.quiz.answers && props.quiz.answers[0].text}
+                <button id={props.quiz.answers && props.quiz.answers[0].answer_id} onClick={onAnswer}>
+                  {props.quiz.answers && props.quiz.answers[0].answer_id === props.selectedAnswer ? 'SELECTED' : 'Select'}
                 </button>
               </div>
 
               <div className="answer">
-                An elephant
-                <button>
-                  Select
+                {props.quiz.answers && props.quiz.answers[1].text}
+                <button id={props.quiz.answers && props.quiz.answers[1].answer_id} onClick={onAnswer}>
+                {props.quiz.answers && props.quiz.answers[1].answer_id === props.selectedAnswer ? 'SELECTED' : 'Select'}
                 </button>
               </div>
             </div>
@@ -32,3 +49,16 @@ export default function Quiz(props) {
     </div>
   )
 }
+
+const mapStateToProps = (state) => {
+  console.log('state', state)
+  return{
+    quiz: state.quiz,
+    selectedAnswer: state.selectedAnswer
+    
+  }
+}
+
+export default connect(mapStateToProps, {fetchQuiz, selectAnswer})(Quiz);
+
+
